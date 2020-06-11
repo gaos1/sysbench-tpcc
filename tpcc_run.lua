@@ -96,14 +96,13 @@ function new_order()
 --                FROM district
 --                WHERE d_id = :d_id
 --                AND d_w_id = :w_id
---                FOR UPDATE
   local d_next_o_id
   local d_tax
 
   d_next_o_id, d_tax = con:query_row(([[SELECT d_next_o_id, d_tax 
                                           FROM district%d 
                                          WHERE d_w_id = %d 
-                                           AND d_id = %d FOR UPDATE]]):
+                                           AND d_id = %d ]]):
                                         format(table_num, w_id, d_id))
 
 -- UPDATE district SET d_next_o_id = :d_next_o_id + 1
@@ -169,7 +168,7 @@ function new_order()
 --	FROM stock
 --	WHERE s_i_id = :ol_i_id 
 --	AND s_w_id = :ol_supply_w_id
---	FOR UPDATE;*/
+--	;*/
 
         local s_quantity 
         local s_data 
@@ -177,7 +176,7 @@ function new_order()
 
 	s_quantity, s_data, ol_dist_info = con:query_row(([[SELECT s_quantity, s_data, s_dist_%s s_dist 
 	                                                      FROM stock%d  
-	                                                     WHERE s_i_id = %d AND s_w_id= %d FOR UPDATE]]):
+	                                                     WHERE s_i_id = %d AND s_w_id= %d ]]):
 	                                                     format(string.format("%02d",d_id),table_num,ol_i_id,ol_supply_w_id ))
      
         s_quantity=tonumber(s_quantity)
@@ -334,7 +333,7 @@ function payment()
 --	WHERE c_w_id = :c_w_id 
 --	AND c_d_id = :c_d_id 
 --	AND c_id = :c_id
---	FOR UPDATE;
+--	;
 
   local c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip,
         c_phone, c_credit, c_credit_lim, c_discount, c_balance, c_ytd_payment, c_since
@@ -347,7 +346,7 @@ function payment()
 			    FROM customer%d
 			   WHERE c_w_id = %d 
 			     AND c_d_id= %d
-			     AND c_id=%d FOR UPDATE]])
+			     AND c_id=%d ]])
 			 :format(table_num, w_id, c_d_id, c_id ))
 
   c_balance = tonumber(c_balance) - h_amount
@@ -560,7 +559,7 @@ function delivery()
 --		                WHERE no_d_id = :d_id AND no_w_id = :w_id;*/
 		                
 --        rs = con:query(([[SELECT COALESCE(MIN(no_o_id),0) no_o_id
---                 FROM new_orders%d WHERE no_d_id = %d AND no_w_id = %d FOR UPDATE]])
+--                 FROM new_orders%d WHERE no_d_id = %d AND no_w_id = %d ]])
 --                      :format(table_num, d_id, w_id))
 
         local no_o_id
@@ -569,7 +568,7 @@ function delivery()
                                      FROM new_orders%d 
                                     WHERE no_d_id = %d 
                                       AND no_w_id = %d 
-                                      ORDER BY no_o_id ASC LIMIT 1 FOR UPDATE]])
+                                      ORDER BY no_o_id ASC LIMIT 1 ]])
                                    :format(table_num, d_id, w_id))
 
         if (rs.nrows > 0) then
